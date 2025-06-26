@@ -1,6 +1,5 @@
 import {
   StyleSheet,
-  Dimensions,
   Text,
   View,
   TextInput,
@@ -12,12 +11,12 @@ import { useState } from "react";
 export default function App() {
   const [valor, setValor] = useState("");
   const [resultado, setRes] = useState(null);
-  const [operacao, setOp] = useState(null);
 
   // apagar numero por numero
   const apagar = () => {
     setValor((prev) => prev.slice(0, -1));
   };
+  
   // apaga tudo
   const apagaTudo = () => {
     setValor("");
@@ -29,45 +28,75 @@ export default function App() {
     setValor((prev) => prev + numero);
   };
 
-  // Adiciona o operador (+, -, etc.)
-  const adicionarOperacao = (op) => {
-    setValor((prev) => prev + op);
-    setOp(op);
+  // Tokeniza expressão: ["8", "+", "9", "*", "7", "+", "0", "+", "6"]
+  // /padrão(indentificar expressões decimais)/modificadores = /\d+(?:\.\d+)?|[+\-x*/]/g;
+  const tokenize = (expr) => {
+    return expr.match(/\d+(?:\.\d+)?%?|[+\-x*/]/g);
+  };
+  
+  // Conversão de tokens com % para valor decimal
+  const tratarPorcentagem = (tokens) => {
+    return tokens.map(token => {
+      if (token.endsWith("%")) {
+        const numero = parseFloat(token.replace("%", ""));
+        return (numero / 100).toString();
+      }
+      return token;
+    });
   };
 
+
+   // Resolve multiplicação e divisão primeiro
+  const processMultiplicacaoDivisao = (tokens) => {
+    const resultado = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      if (token === "x" || token === "*" || token === "/") {
+
+        const anterior = parseFloat(resultado.pop());
+        const proximo = parseFloat(tokens[++i]);
+
+        const calculado =
+          token === "x" || token === "*" ? anterior * proximo : anterior / proximo;
+
+        resultado.push(calculado.toString());
+      } else {
+        resultado.push(token);
+      }
+    }
+
+    return resultado;
+  };
+
+  // Resolve soma e subtração
+  const processSomaSubtracao = (tokens) => {
+    let total = parseFloat(tokens[0]);
+
+    for (let i = 1; i < tokens.length; i += 2) {
+      const operador = tokens[i];
+      const proximo = parseFloat(tokens[i + 1]);
+
+      if (operador === "+") {
+        total += proximo;
+      } else if (operador === "-") {
+        total -= proximo;
+      }
+    }
+
+    return total;
+  };
+
+
   const igual = () => {
-    if (operacao === "+") {
-      const numeros = valor.split("+");
-      if (numeros.length === 2) {
-        const reslocal = parseInt(numeros[0]) + parseInt(numeros[1]);
-        setRes(reslocal);
-      }
-    }
-    if (operacao === "-") {
-      const numeros = valor.split("-");
-      if (numeros.length === 2) {
-        const reslocal = parseInt(numeros[0]) - parseInt(numeros[1]);
-        setRes(reslocal);
-      }
-    }
-    if (operacao === "x") {
-      const numeros = valor.split("x");
-      if (numeros.length === 2) {
-        const reslocal = parseInt(numeros[0]) * parseInt(numeros[1]);
-        setRes(reslocal);
-      }
-    }
-    if (operacao === "/") {
-      const numeros = valor.split("/");
-      if (numeros.length === 2) {
-        if ((parseInt(numeros[0]) != 0) & (parseInt(numeros[1]) != 0)) {
-          const reslocal = parseInt(numeros[0]) / parseInt(numeros[1]);
-          setRes(reslocal);
-        } else {
-          let av = "Você não pode dividir por 0 !!";
-          setRes(av);
-        }
-      }
+    try {
+      const tokens = tokenize(valor);
+      const tokensComPorcentagem = tratarPorcentagem(tokens);
+      const etapa1 = processMultiplicacaoDivisao(tokensComPorcentagem);
+      const final = processSomaSubtracao(etapa1);
+      setRes(final);
+    } catch (e) {
+      setRes("Erro");
     }
   };
 
@@ -94,17 +123,17 @@ export default function App() {
             <Text style={styles.textobotao}>AC</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.areabotao} onPress={apagar}>
-            <Text style={styles.textobotao}>C</Text>
+            <Text style={styles.textobotao}>DEL</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.areabotao}
-            onPress={() => adicionarOperacao("%")}
+            onPress={() => adicionarNumero("%")}
           >
             <Text style={styles.textobotao}>%</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.areabotao}
-            onPress={() => adicionarOperacao("/")}
+            onPress={() => adicionarNumero("/")}
           >
             <Text style={styles.textobotao}>/</Text>
           </TouchableOpacity>
@@ -130,7 +159,7 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.areabotao}
-            onPress={() => adicionarOperacao("x")}
+            onPress={() => adicionarNumero("x")}
           >
             <Text style={styles.textobotao}>x</Text>
           </TouchableOpacity>
@@ -156,7 +185,7 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.areabotao}
-            onPress={() => adicionarOperacao("-")}
+            onPress={() => adicionarNumero("-")}
           >
             <Text style={styles.textobotao}>-</Text>
           </TouchableOpacity>
@@ -182,15 +211,13 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.areabotao}
-            onPress={() => adicionarOperacao("+")}
+            onPress={() => adicionarNumero("+")}
           >
             <Text style={styles.textobotao}>+</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.arealinha}>
-          <TouchableOpacity style={styles.areabotao}>
-            <Text style={styles.textobotao}>Tro</Text>
-          </TouchableOpacity>
+          
           <TouchableOpacity
             style={styles.areabotao}
             onPress={() => adicionarNumero("0")}
@@ -202,6 +229,9 @@ export default function App() {
             onPress={() => adicionarNumero(".")}
           >
             <Text style={styles.textobotao}>.</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.areabotao}>
+            <Text style={styles.textobotao}>+/-</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.areabotao} onPress={igual}>
             <Text style={styles.textobotao}>=</Text>
@@ -230,7 +260,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
     height: 160, 
-  marginBottom: 10,
+    marginBottom: 10,
   },
   areaexprecao: {
     borderColor: "#333",
