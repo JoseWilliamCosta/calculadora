@@ -29,7 +29,8 @@ export default function App() {
   };
 
   // Tokeniza expressão: ["8", "+", "9", "*", "7", "+", "0", "+", "6"]
-  // /padrão(indentificar expressões decimais)/modificadores = /\d+(?:\.\d+)?|[+\-x*/]/g;
+  // /padrão(indentificar expressões decimais)/modificadores = /\d+(?:\.\d+)?%?|[+\-x*/]/g;
+  // nome: regex
   const tokenize = (expr) => {
     return expr.match(/\d+(?:\.\d+)?%?|[+\-x*/]/g);
   };
@@ -56,6 +57,10 @@ export default function App() {
 
         const anterior = parseFloat(resultado.pop());
         const proximo = parseFloat(tokens[++i]);
+
+        if ((token === "/" || token === "÷") && proximo === 0) {
+          throw new Error("Você não pode dividir por zero!");
+        }
 
         const calculado =
           token === "x" || token === "*" ? anterior * proximo : anterior / proximo;
@@ -96,7 +101,7 @@ export default function App() {
       const final = processSomaSubtracao(etapa1);
       setRes(final);
     } catch (e) {
-      setRes("Erro");
+       setRes(e.message || "Erro no cálculo");
     }
   };
 
