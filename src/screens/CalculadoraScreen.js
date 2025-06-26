@@ -78,13 +78,15 @@ export default function App() {
           <Text>Histórico</Text>
         </View>
         <View style={styles.areaexprecao}>
-          <TextInput
-            style={{ textAlign: "right" }}
-            value={valor}
-            onChangeText={(v1) => setValor(v1)}
-          />
-          <Text>{resultado}</Text>
-        </View>
+  <Text style={styles.titulo}>Expressão</Text>
+  <TextInput
+    style={styles.textInput}
+    value={valor}
+    onChangeText={(v1) => setValor(v1)}
+    textAlign="right"
+  />
+  <Text style={styles.resultado}>{resultado}</Text>
+</View>
       </View>
       <View style={styles.areateclas}>
         <View style={styles.arealinha}>
@@ -220,46 +222,45 @@ const styles = StyleSheet.create({
   },
   areacalculo: {
     width: "90%",
-    padding: 10,
-    justifyContent: "center",
+    marginBottom: 10,
   },
   areahistorico: {
-    borderColor: "blue",
+    borderColor: "#333",
     borderWidth: 1,
-    marginVertical: 5,
-    padding: 5,
-    alignItems: "flex-end",
+    padding: 10,
+    backgroundColor: "#fff",
+    height: 160, 
+  marginBottom: 10,
   },
   areaexprecao: {
-    borderColor: "blue",
+    borderColor: "#333",
     borderWidth: 1,
-    marginVertical: 5,
-    padding: 5,
-    alignItems: "flex-end",
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+    height: 100, 
   },
   areateclas: {
     width: "100%",
-    paddingVertical: 10,
     justifyContent: "space-evenly",
   },
   arealinha: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    width: "100%",
     marginVertical: 5,
   },
   areabotao: {
     flex: 1,
-    borderWidth: 1,
-    backgroundColor: "black",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    backgroundColor: "#999",
+    paddingVertical: 20,
     marginHorizontal: 5,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   textobotao: {
-    color: "white",
+    color: "black",
     fontSize: 20,
-    textAlign: "center",
+    fontWeight: "bold",
   },
 });
