@@ -11,6 +11,7 @@ import { useState } from "react";
 export default function App() {
   const [valor, setValor] = useState("");
   const [resultado, setRes] = useState(null);
+  const [historico, setHistorico] = useState([]);
 
   // apagar numero por numero
   const apagar = () => {
@@ -100,16 +101,34 @@ export default function App() {
       const etapa1 = processMultiplicacaoDivisao(tokensComPorcentagem);
       const final = processSomaSubtracao(etapa1);
       setRes(final);
+
+
+      // aqui é onde ele guarda na lista do historico
+      setHistorico((prev) => {
+        let novo = [`${valor} = ${final}`, ...prev];
+        if (novo.length > 8){
+          novo.pop();
+        }
+        return novo;
+      });
+        
+      
+     
+
     } catch (e) {
        setRes(e.message || "Erro no cálculo");
     }
   };
 
+
+
   return (
     <View style={styles.areatotal}>
       <View style={styles.areacalculo}>
         <View style={styles.areahistorico}>
-          <Text>Histórico</Text>
+            {historico.map((item, index) => (
+              <Text key={index}>{item}</Text>
+            ))}
         </View>
         <View style={styles.areaexprecao}>
   <Text style={styles.titulo}>Expressão</Text>
