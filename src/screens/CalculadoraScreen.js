@@ -127,21 +127,20 @@ export default function App() {
       <View style={styles.areacalculo}>
         <View style={styles.areahistorico}>
             {historico.map((item, index) => (
-              <Text key={index}>{item}</Text>
+              <Text style={styles.textInput}  key={index}>{item}</Text>
             ))}
         </View>
         <View style={styles.areaexprecao}>
-  <Text style={styles.titulo}>Expressão</Text>
-  <TextInput
-    style={styles.textInput}
-    value={valor}
-    onChangeText={(v1) => setValor(v1)}
-    textAlign="right"
-  />
-  <Text style={styles.resultado}>{resultado}</Text>
-</View>
+          <TextInput
+            style={styles.textInput}
+            value={valor}
+            onChangeText={(v1) => setValor(v1)}
+            textAlign="right"
+          />
+          <Text style={styles.resultado}>{resultado}</Text>
       </View>
-      <View style={styles.areateclas}>
+    </View>
+    <View style={styles.areateclas}>
         <View style={styles.arealinha}>
           <TouchableOpacity style={styles.areabotao} onPress={apagaTudo}>
             <Text style={styles.textobotao}>AC</Text>
@@ -317,4 +316,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  textInput: {
+    fontSize: 20,
+  }
 });
